@@ -3,7 +3,7 @@ from utility import XorLayer
 from utility import METRICS_FOLDER , MODEL_FOLDER
 from gmpy2 import mpz,mul
 
-from train_models_third_order import   model_single_task_xor_whole , model_single_task_xor_extracted , model_single_task_xor_flat   , model_multi_task_whole, model_multi_task_extracted, model_multi_task_flat
+from train_models_second_order import   model_single_task_xor_whole , model_single_task_xor_extracted , model_single_task_xor_flat   , model_multi_task_whole, model_multi_task_extracted, model_multi_task_flat
 
 import argparse , parse
 from multiprocessing import Process
@@ -49,7 +49,7 @@ class Attack:
 
         id_model  = 'cb{}ks{}f{}ps{}db{}du{}'.format(convolution_blocks , kernel_size,filters , pooling_size,dense_blocks,dense_units)
         if model_type == 'multi_task':
-            multi_name = '{}_{}_{}_third.h5'.format('model_{}_{}'.format(model_type,training_type), 'all',id_model) 
+            multi_name = '{}_{}_{}_second.h5'.format('model_{}_{}'.format(model_type,training_type), 'all',id_model) 
             X_multi = {}
             if training_type == 'extracted':
                 model_struct = model_multi_task_extracted(convolution_blocks ,dense_blocks, kernel_size,filters , pooling_size,dense_units,summary = False)
@@ -77,7 +77,7 @@ class Attack:
                 predictions_non_permuted[byte] = all_predictions['output_t_{}'.format(byte)]
         else:
             for byte in range(16):
-                name = '{}_{}_{}_third.h5'.format('model_{}_{}'.format(model_type,training_type),byte ,id_model) 
+                name = '{}_{}_{}_second.h5'.format('model_{}_{}'.format(model_type,training_type),byte ,id_model) 
                 X_single = {} 
 
                 if training_type == 'extracted':
@@ -201,7 +201,7 @@ class Attack:
        print(typ)
        print('GE < 2 : ',(np.min(whe) if whe.shape[0] >= 1 else self.traces_per_exp))        
 
-       file = open(METRICS_FOLDER + 'history_attack_experiments_{}_{}_{}_third'.format(typ,id_model,self.n_experiments),'wb')
+       file = open(METRICS_FOLDER + 'history_attack_experiments_{}_{}_{}_second'.format(typ,id_model,self.n_experiments),'wb')
        pickle.dump(history_score,file)
        file.close()
 
@@ -255,11 +255,11 @@ if __name__ == "__main__":
 
             if not (multi_task in model_name):
                 continue
-            if not 'third' in model_name:
+            if not 'second' in model_name:
                 continue
             print(model_name)
             print(multi_task)
-            format_string = multi_task + '_cb{}ks{}f{}ps{}db{}du{}_third.h5'
+            format_string = multi_task + '_cb{}ks{}f{}ps{}db{}du{}_second.h5'
             parsed = parse.parse(format_string,model_name)
             convolution_blocks = int(parsed[0])
             kernel_size_list = parsed[1][1:-1]

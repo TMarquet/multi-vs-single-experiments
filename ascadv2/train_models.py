@@ -262,13 +262,6 @@ def model_single_task_xor_flat(convolution_blocks,dense_blocks , kernel_size,fil
     return model
 
 
-### Multi-Task Models
-
-
-
-
-
-
 
 
 
@@ -551,6 +544,9 @@ if __name__ == "__main__":
     else:
         print('No training mode selected')
 
+
+
+    ### YOU SHOULD PROBABLY REMOVE THE PROCESS.
 
 
     for model_random in tqdm(range(25)):

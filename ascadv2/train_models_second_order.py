@@ -21,7 +21,7 @@ from utility import  METRICS_FOLDER , MODEL_FOLDER
 # import custom layers
 from utility import MultiLayer , XorLayer , PoolingCrop
 
-from utility import load_dataset_third_order , load_dataset_multi_third_order 
+from utility import load_dataset_second_order , load_dataset_multi_second_order 
 from tqdm import tqdm
 
 
@@ -443,16 +443,11 @@ def train_model(training_type,byte,convolution_blocks , kernel_size,filters , po
     monitor = 'val_accuracy'
     mode = 'max'
     strides = None
-    if model_t == 'model_single_task_extracted':
-        model = model_single_task_extracted(convolution_blocks,dense_blocks , kernel_size,filters , pooling_size,dense_units)       
-    elif model_t == 'model_single_task_xor_extracted':
-        model = model_single_task_xor_extracted(convolution_blocks,dense_blocks , kernel_size,filters , pooling_size,dense_units)
-    elif model_t == 'model_single_task_flat':
-        model = model_single_task_flat(convolution_blocks,dense_blocks , kernel_size,filters , pooling_size,dense_units)            
+    
+    if model_t == 'model_single_task_xor_extracted':
+        model = model_single_task_xor_extracted(convolution_blocks,dense_blocks , kernel_size,filters , pooling_size,dense_units) 
     elif model_t == 'model_single_task_xor_flat':
         model = model_single_task_xor_flat(convolution_blocks,dense_blocks , kernel_size,filters , pooling_size,dense_units)         
-    elif model_t == 'model_single_task_whole':
-        model = model_single_task_whole(convolution_blocks,dense_blocks , kernel_size,filters , pooling_size,dense_units)  
     elif model_t == 'model_single_task_xor_whole':
         model = model_single_task_xor_whole(convolution_blocks,dense_blocks , kernel_size,filters , pooling_size,dense_units)     
     elif model_t == 'model_multi_task_extracted':
@@ -542,14 +537,7 @@ if __name__ == "__main__":
         training_types = ['single_task_extracted', 'single_task_flat','single_task_whole','single_task_softmax_check','single_task_xor_extracted', 'single_task_xor_flat','single_task_xor_whole','multi_task_extracted','multi_task_flat','multi_task_whole']
     else:
         print('No training mode selected')
-    # for model_random in tqdm(range(25)):
-    #     convolution_blocks = 1
-    #     kernel_size = sorted(np.random.randint(4,32,size = convolution_blocks))       
-    #     filters = 16
-    #     pooling_size = np.random.randint(2,5)
-    #     dense_blocks = np.random.randint(1,5)
-    #     dense_units = np.random.randint(64,512)
-    #     print(model_random,kernel_size,pooling_size,dense_blocks,dense_units) 
+
         
 
     for model_random in tqdm(range(0,25)):
@@ -560,18 +548,18 @@ if __name__ == "__main__":
         pooling_size = np.random.randint(2,5)
         dense_blocks = np.random.randint(1,5)
         dense_units = np.random.randint(64,512)
-        if model_random in  [6,11,15,17,18,22,24]:
-            for training_type in training_types:
-                print(training_type)
-                if  not ('multi_task' in training_type):
-                    for byte in range(0,1):
-                        process_eval = Process(target=train_model, args=(training_type,byte,convolution_blocks , kernel_size,filters , pooling_size,dense_blocks,dense_units))
-                        process_eval.start()
-                        process_eval.join()
-                else:
-                    process_eval = Process(target=train_model, args=(training_type,'all',convolution_blocks , kernel_size,filters , pooling_size,dense_blocks,dense_units))
+
+        for training_type in training_types:
+            print(training_type)
+            if  not ('multi_task' in training_type):
+                for byte in range(0,1):
+                    process_eval = Process(target=train_model, args=(training_type,byte,convolution_blocks , kernel_size,filters , pooling_size,dense_blocks,dense_units))
                     process_eval.start()
-                    process_eval.join()                                    
+                    process_eval.join()
+            else:
+                process_eval = Process(target=train_model, args=(training_type,'all',convolution_blocks , kernel_size,filters , pooling_size,dense_blocks,dense_units))
+                process_eval.start()
+                process_eval.join()                                    
 
 
     print("$ Done !")

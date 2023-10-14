@@ -324,7 +324,7 @@ def load_dataset(byte,flat = False,whole = False,n_traces = None,dataset = 'trai
         return (X_profiling_dict,Y_profiling_dict)   
        
 
-def load_dataset_third_order(byte,flat = False,whole = False,n_traces = None,dataset = 'training',encoded_labels = True,print_logs = True):    
+def load_dataset_second_order(byte,flat = False,whole = False,n_traces = None,dataset = 'training',encoded_labels = True,print_logs = True):    
     target = 't1'
     training = dataset == 'training' 
     if print_logs :
@@ -476,7 +476,7 @@ def load_dataset_multi(n_traces = None,flat = False,noperm = False,whole = False
         return (X_profiling_dict,Y_profiling_dict)    
 
 
-def load_dataset_multi_third_order(n_traces = None,flat = False,noperm = False,whole = False,dataset = 'training',encoded_labels = True,print_logs = True):
+def load_dataset_multi_second_order(n_traces = None,flat = False,noperm = False,whole = False,dataset = 'training',encoded_labels = True,print_logs = True):
     training = dataset == 'training' 
     if print_logs :
         str_targets = 'Loading samples and labels in order to train the multi-task model'
