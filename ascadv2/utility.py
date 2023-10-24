@@ -87,7 +87,10 @@ class PoolingCrop(tf.keras.layers.Layer):
 class XorLayer(tf.keras.layers.Layer):
   def __init__(self,classes =256 ,name = ''):
     super(XorLayer, self).__init__(name = name)
-    all_maps = np.load('utils/xor_mapping.npy')
+    all_maps = np.zeros((classes,classes,classes),dtype =np.uint8)
+    for i in range(classes):
+        for j in range(classes):
+            all_maps[i, j, i^j] = 1    
     mapping1 = []
     mapping2 = []
     for classe in range(classes):
@@ -100,18 +103,14 @@ class XorLayer(tf.keras.layers.Layer):
     
   def call(self, inputs):  
  
-    pred1 = tnp.asarray(inputs[0])
+    pred1 = inputs[0]
     pred2 = tnp.asarray(inputs[1])
-    p1 = pred1[:,self.mapping1]
+    p1 = pred1 
     p2 = pred2[:,self.mapping2]
 
-    res = tf.reduce_sum(tf.multiply(p1,p2),axis =2)   
+    res = tf.einsum('ij,ijk->ik',p1,p2)
     return res
 
-    def get_config(self):
-        config = {'mapping':self.mapping}
-        base_config = super(XorLayer,self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
     
 log_table=[ 0, 0, 25, 1, 50, 2, 26, 198, 75, 199, 27, 104, 51, 238, 223, 3,
     100, 4, 224, 14, 52, 141, 129, 239, 76, 113, 8, 200, 248, 105, 28, 193,
