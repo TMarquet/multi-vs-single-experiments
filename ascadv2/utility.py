@@ -90,7 +90,7 @@ class XorLayer(tf.keras.layers.Layer):
     all_maps = np.zeros((classes,classes),dtype =np.uint8)
     for i in range(classes):
         for j in range(classes):
-            all_maps[i, j ] = i^j    
+            all_maps[i, i^j  ] = j   
     self.mapping2 = all_maps
     self.classes = classes
     
@@ -150,25 +150,21 @@ def multGF256(a,b):
 class MultiLayer(tf.keras.layers.Layer):
     def __init__(self,classes = 256 ,name = ''):
         super(MultiLayer, self).__init__(name = name)
-        all_maps = np.load('utils/mult_mapping.npy')
-        mapping1 = []
-        mapping2 = []
-        for classe in range(classes):
-            mapped = np.where(all_maps[classe] == 1)
-            mapping1.append(mapped[0])
-            mapping2.append(mapped[1])
-        self.mapping1 = np.array(mapping1)
-        self.mapping2 = np.array(mapping2)
+        all_maps = np.zeros((classes,classes),dtype =np.uint8)
+        for i in range(classes):
+            for j in range(classes):
+                all_maps[i, multGF256(i,j) ] = j
+        self.mapping2 = all_maps
         self.classes = classes
     
     def call(self, inputs):  
  
-        pred1 = tnp.asarray(inputs[0])
+        pred1 = inputs[0]
         pred2 = tnp.asarray(inputs[1])
-        p1 = pred1[:,self.mapping1]
+        p1 = pred1
         p2 = pred2[:,self.mapping2]
     
-        res = tf.reduce_sum(tf.multiply(p1,p2),axis =2)   
+        res = tf.reduce_sum(tf.multiply(tf.expand_dims(p1,2) , p2),axis = 1)
         return res
 
     def get_config(self):
